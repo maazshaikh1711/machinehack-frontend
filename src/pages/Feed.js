@@ -102,7 +102,7 @@ const Feed = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setNewComment({ ...newComment, [postId]: "" });
-      fetchComments(postId); // Refresh comments for that post
+    //   fetchComments(postId); // Refresh comments for that post
     } catch (error) {
       console.error("Error submitting comment:", error);
     }
