@@ -4,6 +4,7 @@ import axios from "axios";
 const Feed = () => {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ caption: "", image: null });
+  const [newComment, setNewComment] = useState({});
 
   const fetchPosts = async () => {
     try {
@@ -11,9 +12,41 @@ const Feed = () => {
       const response = await axios.get("http://localhost:5000/api/v1/posts", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setPosts(response.data);
+      console.log("=====>", response.data)
+      const postsData = response.data;
+
+      // Fetch comments for each post after fetching posts
+      const postsWithComments = await Promise.all(
+        postsData.map(async (post) => {
+          const commentsResponse = await axios.get(
+            `http://localhost:5000/api/v1/comments/${post._id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          return { ...post, comments: commentsResponse.data };
+        })
+      );
+
+      setPosts(postsWithComments);
     } catch (error) {
       console.error("Error fetching posts:", error);
+    }
+  };
+
+  const fetchComments = async (postId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:5000/api/v1/comments/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId ? { ...post, comments: response.data } : post
+        )
+      );
+    } catch (error) {
+      console.error("Error fetching comments:", error);
     }
   };
 
@@ -57,6 +90,24 @@ const Feed = () => {
     }
   };
 
+  const handleCommentSubmit = async (postId) => {
+    const content = newComment[postId];
+    if (!content) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `http://localhost:5000/api/v1/comments/${postId}`,
+        { content },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNewComment({ ...newComment, [postId]: "" });
+      fetchComments(postId); // Refresh comments for that post
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+    }
+  };
+
   return (
     <div>
       <h1>Feed</h1>
@@ -90,6 +141,33 @@ const Feed = () => {
               />
             )}
             <p>By: {post.user.username}</p>
+
+            {/* Display Comments and Comments */}
+            <div>
+              <h4>Comments</h4>
+              {post.comments && post.comments.length > 0 ? (
+                post.comments.map((comment) => (
+                  <div key={comment._id}>
+                    <strong>{comment.user.username}:</strong> {comment.content}
+                  </div>
+                ))
+              ) : (
+                <p>No comments yet.</p>
+              )}
+
+              {/* Comment Input */}
+              <input
+                type="text"
+                value={newComment[post._id] || ""}
+                onChange={(e) =>
+                  setNewComment({ ...newComment, [post._id]: e.target.value })
+                }
+                placeholder="Add a comment..."
+              />
+              <button onClick={() => handleCommentSubmit(post._id)}>
+                Post Comment
+              </button>
+            </div>
           </div>
         ))}
       </div>
