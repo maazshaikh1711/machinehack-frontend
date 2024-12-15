@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
-const App = () => {
-  return(
-    <div className="App">
-      
-    </div>
-  )
+function App() {
+  return (
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
 export default App;
