@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import './Register.css';
 
 const Register = () => {
   const [user, setUser] = useState({ username: "", password: "" });
@@ -23,33 +24,39 @@ const Register = () => {
 
   return (
     <div className="register-container">
-      <h1>Register</h1>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            name="username"
-            value={user.username}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={user.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit">Register</button>
-      </form>
+      <div className="register-card">
+        <h1 className="register-title">Register</h1>
+        {error && <p className="register-error">{error}</p>}
+        <form className="register-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username:</label>
+            <input
+              id="username"
+              type="text"
+              name="username"
+              value={user.username}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="password">Password:</label>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              value={user.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button className="register-button" type="submit">
+            Register
+          </button>
+        </form>
+      </div>
     </div>
-  );
+  );  
 };
 
 export default Register;
