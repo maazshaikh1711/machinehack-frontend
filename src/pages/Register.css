@@ -1,10 +1,11 @@
 /* Container for the Register Page */
 .register-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
     height: 100vh;
-    background-color: #f5f5f5;
+    background: linear-gradient(135deg, #a29bfe, #74b9ff);
   }
   
   /* Card to hold the form */

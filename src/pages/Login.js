@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import logoImage from "../assets/machineHack.png"
 import "./Login.css";
 
 const Login = () => {
@@ -28,6 +29,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
+      <img src={logoImage} alt="Logo" className="auth-image" />
       <div className="login-card">
         <h1 className="login-title">Login</h1>
         {error && <p className="login-error">{error}</p>}

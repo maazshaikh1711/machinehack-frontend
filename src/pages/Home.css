@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center; /* Center the content horizontally */
-  justify-content: flex-start; /* Align items at the top */
+  justify-content: flex-start;
   height: 100vh;
   background: linear-gradient(135deg, #a29bfe, #74b9ff);
   text-align: center;
@@ -12,13 +12,13 @@
 }
 
 .home-image {
-  width: 80%;  /* Adjust size as needed */
-  max-width: 600px; /* Optional: Prevent image from becoming too large */
-  height: auto; /* Keep the aspect ratio intact */
+  width: 80%;  
+  max-width: 600px;
+  height: auto;
   object-fit: cover;
   margin-bottom: 20px;
-  border-radius: 8px; /* Optional: adds rounded corners to the image */
-  margin-top: 20px; /* Ensures the image is not too close to the top */
+  border-radius: 8px;
+  margin-top: 20px; 
 }
 
 .home-title {

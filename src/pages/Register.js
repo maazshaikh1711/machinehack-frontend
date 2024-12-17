@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import logoImage from '../assets/machineHack.png';
 import './Register.css';
 
 const Register = () => {
@@ -24,6 +25,7 @@ const Register = () => {
 
   return (
     <div className="register-container">
+      <img src={logoImage} alt="Logo" className="auth-image" />
       <div className="register-card">
         <h1 className="register-title">Register</h1>
         {error && <p className="register-error">{error}</p>}
