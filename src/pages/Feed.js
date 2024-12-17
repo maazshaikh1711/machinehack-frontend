@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./Feed.css";
+import Logout from "./Logout";
+import { useLocation } from "react-router-dom";
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ caption: "", image: null });
   const [newComment, setNewComment] = useState({});
+  // Access the passed state (username) using useLocation
+  const location = useLocation();
+  const username = location?.state?.username;  // Get username from location state
 
   const fetchPosts = async () => {
     try {
@@ -12,7 +18,6 @@ const Feed = () => {
       const response = await axios.get("http://localhost:5000/api/v1/posts", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("=====>", response.data)
       const postsData = response.data;
 
       // Fetch comments for each post after fetching posts
@@ -55,7 +60,6 @@ const Feed = () => {
   }, []);
 
   const handlePostCreation = async (e) => {
-    
     e.preventDefault();
     // const formData = new FormData();
     // formData.append("caption", newPost.caption);
@@ -63,28 +67,23 @@ const Feed = () => {
     // for (let [key, value] of formData.entries()) {
         //     console.log(key, value);  // Log each entry in the FormData
         // }
-        
-        // const caption = formData?.entries()?.['caption']; // Text input
-        // const file = document.getElementById('file')?.files[0]; // File input
-        
-        const postData = {
-            caption: newPost.caption?newPost.caption:null,
-            file: newPost.image?newPost.image:null
-        };
-        console.log("---------", postData);
+    const postData = {
+      caption: newPost.caption ? newPost.caption : null,
+      file: newPost.image ? newPost.image : null
+    };
     
     try {
-        const token = localStorage.getItem("token");
-        axios.post(
-            'http://localhost:5000/api/v1/posts',
-            postData,
-            { headers: { Authorization: `Bearer ${token}` } } // Headers
-        )
-        .then(res => {console.log('Post Success:', res)
-            setNewPost({ caption: "", image: null });
-            fetchPosts(); // Refresh posts
-        })
-        .catch(err => console.error('Post Error:', err.response || err));
+      const token = localStorage.getItem("token");
+      axios.post(
+        'http://localhost:5000/api/v1/posts',
+        postData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then(res => {
+        setNewPost({ caption: "", image: null });
+        fetchPosts(); // Refresh posts
+      })
+      .catch(err => console.error('Post Error:', err.response || err));
     } catch (error) {
       console.error("Error creating post:", error);
     }
@@ -109,10 +108,19 @@ const Feed = () => {
   };
 
   return (
-    <div>
-      <h1>Feed</h1>
+    <div className="feed-container">
+      <h1>ADD POST</h1>
+
+      {/* Display logged in username at the top-right corner */}
+      <div className="username-display">
+        Logged in as: <strong>{username}</strong>
+      </div>
+      <div className="logout">
+        <Logout />
+      </div>
+
       {/* Post Creation Form */}
-      <form onSubmit={handlePostCreation}>
+      <form onSubmit={handlePostCreation} className="create-post-form">
         <input
           type="text"
           placeholder="Enter caption"
@@ -128,26 +136,27 @@ const Feed = () => {
         <button type="submit">Create Post</button>
       </form>
 
+      <h1>FEED</h1>
       {/* Display Posts */}
       <div>
         {posts.map((post) => (
-          <div key={post._id} style={{ border: "1px solid #ccc", margin: "10px" }}>
+          <div key={post._id} className="post-card">
             <h3>{post.caption}</h3>
             {post.image && (
               <img
                 src={post.image}
                 alt="Post"
-                style={{ width: "200px", height: "auto" }}
+                className="post-image"
               />
             )}
-            <p>By: {post.user.username}</p>
+            <p className="post-user-info">By: {post.user.username}</p>
 
-            {/* Display Comments and Comments */}
-            <div>
+            {/* Display Comments and Comment Input */}
+            <div className="comment-section">
               <h4>Comments</h4>
               {post.comments && post.comments.length > 0 ? (
                 post.comments.map((comment) => (
-                  <div key={comment._id}>
+                  <div key={comment._id} className="comment-item">
                     <strong>{comment.user.username}:</strong> {comment.content}
                   </div>
                 ))
@@ -162,9 +171,13 @@ const Feed = () => {
                 onChange={(e) =>
                   setNewComment({ ...newComment, [post._id]: e.target.value })
                 }
+                className="comment-input"
                 placeholder="Add a comment..."
               />
-              <button onClick={() => handleCommentSubmit(post._id)}>
+              <button
+                className="comment-button"
+                onClick={() => handleCommentSubmit(post._id)}
+              >
                 Post Comment
               </button>
             </div>
