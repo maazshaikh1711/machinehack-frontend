@@ -1,0 +1,78 @@
+/* ./styles/Home.css */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the content horizontally */
+  justify-content: flex-start; /* Align items at the top */
+  height: 100vh;
+  background: linear-gradient(135deg, #a29bfe, #74b9ff);
+  text-align: center;
+  padding: 20px;
+  color: white;
+}
+
+.home-image {
+  width: 80%;  /* Adjust size as needed */
+  max-width: 600px; /* Optional: Prevent image from becoming too large */
+  height: auto; /* Keep the aspect ratio intact */
+  object-fit: cover;
+  margin-bottom: 20px;
+  border-radius: 8px; /* Optional: adds rounded corners to the image */
+  margin-top: 20px; /* Ensures the image is not too close to the top */
+}
+
+.home-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.home-description {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 40px;
+  font-family: 'Arial', sans-serif;
+}
+
+.auth-options {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.auth-button {
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.login-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.register-btn {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.auth-button:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.auth-button:focus {
+  outline: none;
+}
+
+.auth-button:active {
+  transform: scale(1);
+}
