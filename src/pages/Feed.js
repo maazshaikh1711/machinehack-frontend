@@ -3,7 +3,7 @@ import axios from "axios";
 import { io } from "socket.io-client"; // Import Socket.IO client
 import "./Feed.css";
 import Logout from "./Logout";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const socket = io("http://localhost:5000"); // Connect to the backend server
 
@@ -12,6 +12,7 @@ const Feed = () => {
   const [newPost, setNewPost] = useState({ caption: "", image: null });
   const [newComment, setNewComment] = useState({});
   const location = useLocation();
+  const navigate = useNavigate();
   const username = location?.state?.username;
 
   const fetchPosts = async () => {
@@ -61,6 +62,13 @@ const Feed = () => {
   };
 
   useEffect(() => {
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login"); // Redirect to login if token is not present
+      return;
+    }
+
     fetchPosts();
 
     // Listen for new posts via Socket.IO
@@ -68,11 +76,23 @@ const Feed = () => {
       setPosts((prevPosts) => [post, ...prevPosts]);
     });
 
+    // Listen for new comments via Socket.IO
+    socket.on("newComment", ({ postId, comment }) => {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? { ...post, comments: [...(post.comments || []), comment] }
+            : post
+        )
+      );
+    });
+
     // Cleanup the socket connection when component unmounts
     return () => {
       socket.off("newPost");
+      socket.off("newComment");
     };
-  }, []);
+  }, [navigate]);
 
   const handlePostCreation = async (e) => {
     e.preventDefault();
