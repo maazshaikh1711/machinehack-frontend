@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { io } from "socket.io-client"; // Import Socket.IO client
 import "./Feed.css";
 import Logout from "./Logout";
 import { useLocation } from "react-router-dom";
+
+const socket = io("http://localhost:5000"); // Connect to the backend server
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ caption: "", image: null });
   const [newComment, setNewComment] = useState({});
-  // Access the passed state (username) using useLocation
   const location = useLocation();
-  const username = location?.state?.username;  // Get username from location state
+  const username = location?.state?.username;
 
   const fetchPosts = async () => {
     try {
@@ -42,9 +44,12 @@ const Feed = () => {
   const fetchComments = async (postId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:5000/api/v1/comments/${postId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `http://localhost:5000/api/v1/comments/${postId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === postId ? { ...post, comments: response.data } : post
@@ -57,6 +62,16 @@ const Feed = () => {
 
   useEffect(() => {
     fetchPosts();
+
+    // Listen for new posts via Socket.IO
+    socket.on("newPost", (post) => {
+      setPosts((prevPosts) => [post, ...prevPosts]);
+    });
+
+    // Cleanup the socket connection when component unmounts
+    return () => {
+      socket.off("newPost");
+    };
   }, []);
 
   const handlePostCreation = async (e) => {
@@ -69,21 +84,20 @@ const Feed = () => {
         // }
     const postData = {
       caption: newPost.caption ? newPost.caption : null,
-      file: newPost.image ? newPost.image : null
+      imageUrl: newPost.image ? newPost.image : null,
     };
-    
+
     try {
       const token = localStorage.getItem("token");
-      axios.post(
-        'http://localhost:5000/api/v1/posts',
-        postData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      .then(res => {
-        setNewPost({ caption: "", image: null });
-        fetchPosts(); // Refresh posts
-      })
-      .catch(err => console.error('Post Error:', err.response || err));
+      axios
+        .post("http://localhost:5000/api/v1/posts", postData, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setNewPost({ caption: "", image: null });
+          fetchPosts(); // Refresh posts
+        })
+        .catch((err) => console.error("Post Error:", err.response || err));
     } catch (error) {
       console.error("Error creating post:", error);
     }
@@ -143,11 +157,7 @@ const Feed = () => {
           <div key={post._id} className="post-card">
             <h3>{post.caption}</h3>
             {post.image && (
-              <img
-                src={post.image}
-                alt="Post"
-                className="post-image"
-              />
+              <img src={post.image} alt="Post" className="post-image" />
             )}
             <p className="post-user-info">By: {post.user.username}</p>
 
