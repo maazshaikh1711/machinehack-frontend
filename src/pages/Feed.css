@@ -59,8 +59,8 @@
   
   /* User Info */
   .post-user-info {
-    font-size: 0.9rem;
-    color: #555;
+    /* font-size: 0.9rem; */
+    /* color: #555; */
   }
   
   /* Comment Section */
@@ -151,6 +151,12 @@
   .create-post-form button:hover {
     background-color: #218838;
   }
+
+  .post-image {
+    max-width: 80%;
+    height: auto;
+    border-radius: 8px;
+  }  
   
   /* Mobile Responsiveness */
   @media (max-width: 768px) {
