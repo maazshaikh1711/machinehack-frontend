@@ -19,7 +19,7 @@ const Register = () => {
       await axios.post("http://localhost:5000/api/v1/auth/register", user);
       navigate("/login");
     } catch (err) {
-      setError("Registration failed. Try again.");
+      setError(err.response.data.message);
     }
   };
 
