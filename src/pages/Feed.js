@@ -9,7 +9,7 @@ const socket = io("http://localhost:5000"); // Connect to the backend server
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
-  const [newPost, setNewPost] = useState({ caption: "", image: null });
+  const [newPost, setNewPost] = useState({ caption: "", image: null, imageName: "", imageSize: null, imageType: null,});
   const [newComment, setNewComment] = useState({});
   const location = useLocation();
   const navigate = useNavigate();
@@ -94,33 +94,69 @@ const Feed = () => {
     };
   }, [navigate]);
 
+  const handleFileUpload = async() => {
+    try{
+      // Step 1: Get the pre-signed URL from the backend
+      const response = await axios.post("http://localhost:5000/api/v1/posts/upload-s3-presign", {
+        fileName: newPost.imageName,
+        fileType: newPost.imageType,
+      });
+
+      const { url, key } = response.data;  // Destructure the pre-signed URL and key
+
+      // Step 2: Upload the file to S3 using the pre-signed URL
+      const uploadResponse = await axios.put(url, newPost.image, {
+        headers: {
+          "Content-Type": newPost.type, // The content type should match the file type
+        },
+      });
+
+      // File uploaded successfully, you can now use the file URL (or key) to store in your database
+      console.log("File uploaded successfully:", uploadResponse);
+
+      return key;  // The key of the file uploaded to S3 (you can store this in your database)
+    }
+    catch (err) {
+      throw new Error("File upload failed");
+    }
+  }
+
   const handlePostCreation = async (e) => {
     e.preventDefault();
     // const formData = new FormData();
     // formData.append("caption", newPost.caption);
     // if (newPost.image) formData.append("image", newPost.image);
     // for (let [key, value] of formData.entries()) {
-        //     console.log(key, value);  // Log each entry in the FormData
-        // }
-    const postData = {
-      caption: newPost.caption ? newPost.caption : null,
-      imageUrl: newPost.image ? newPost.image : null,
-    };
+    //         console.log(key, value);  // Log each entry in the FormData
+    //     }
+    // const postData = {
+    //   caption: newPost.caption ? newPost.caption : null,
+    //   imageUrl: newPost.image ? newPost.image : null,
+    // };
+    // console.log("----------------", postData)
 
     try {
+
+      const imageKey = await handleFileUpload();
+      const postData = {
+        caption: newPost.caption,
+        imageKey
+      };
+
       const token = localStorage.getItem("token");
       axios
         .post("http://localhost:5000/api/v1/posts", postData, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
-          setNewPost({ caption: "", image: null });
+          setNewPost({ caption: "", image: "", imageName: "", imageSize: "", imageType: ""});
           fetchPosts(); // Refresh posts
         })
         .catch((err) => console.error("Post Error:", err.response || err));
     } catch (error) {
       console.error("Error creating post:", error);
     }
+    e.target.reset();
   };
 
   const handleCommentSubmit = async (postId) => {
@@ -163,8 +199,11 @@ const Feed = () => {
         />
         <input
           type="file"
-          onChange={(e) =>
-            setNewPost({ ...newPost, image: e.target.files[0] })
+          defaultValue=""
+          onChange={(e) =>{
+            const file = e.target.files[0];
+            setNewPost({ ...newPost, image: file, imageName: file.name, imageSize: file.size, imageType: file.type })
+          }
           }
         />
         <button type="submit">Create Post</button>
@@ -175,11 +214,11 @@ const Feed = () => {
       <div>
         {posts.map((post) => (
           <div key={post._id} className="post-card">
-            <h3>{post.caption}</h3>
-            {post.image && (
-              <img src={post.image} alt="Post" className="post-image" />
+            <h1 className="post-user-info">By: {post.user.username}</h1>
+            {post.imageKey.replace(`uploads/`, '') !=="" && (
+              <img src={post.imageUrl} alt="Post" className="post-image" />
             )}
-            <p className="post-user-info">By: {post.user.username}</p>
+            <p>{post.caption}</p>
 
             {/* Display Comments and Comment Input */}
             <div className="comment-section">
