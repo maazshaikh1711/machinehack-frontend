@@ -107,7 +107,7 @@ const Feed = () => {
       // Step 2: Upload the file to S3 using the pre-signed URL
       const uploadResponse = await axios.put(url, newPost.image, {
         headers: {
-          "Content-Type": newPost.type, // The content type should match the file type
+          "Content-Type": newPost.imageType, // The content type should match the file type
         },
       });
 
@@ -149,7 +149,7 @@ const Feed = () => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
-          setNewPost({ caption: "", image: "", imageName: "", imageSize: "", imageType: ""});
+          setNewPost({ caption: "", image: null, imageName: "", imageSize: null, imageType: null});
           fetchPosts(); // Refresh posts
         })
         .catch((err) => console.error("Post Error:", err.response || err));
@@ -202,7 +202,28 @@ const Feed = () => {
           defaultValue=""
           onChange={(e) =>{
             const file = e.target.files[0];
-            setNewPost({ ...newPost, image: file, imageName: file.name, imageSize: file.size, imageType: file.type })
+            if (file) {
+              const validFileTypes = ["image/jpeg", "image/png"];
+              const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+              if (!validFileTypes.includes(file.type)) {
+                alert("Invalid file type! Please upload an image file.");
+                e.target.value = ""; // Reset the file input field
+                setNewPost({ ...newPost, image: null, imageName: "", imageSize: null, imageType: null });
+                return;
+              }
+
+              else if (file.size > maxFileSize) {
+                alert("File size must be less than 5MB.");
+                e.target.value = ""; // Reset the file input field
+                setNewPost({ ...newPost, image: null, imageName: "", imageSize: null, imageType: null });
+                return;
+              }
+
+              else{
+                setNewPost({ ...newPost, image: file, imageName: file.name, imageSize: file.size, imageType: file.type });
+              }  
+            }
           }
           }
         />
@@ -242,6 +263,12 @@ const Feed = () => {
                 }
                 className="comment-input"
                 placeholder="Add a comment..."
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault(); // Prevent default form submission
+                    handleCommentSubmit(post._id);
+                  }
+                }}
               />
               <button
                 className="comment-button"
