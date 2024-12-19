@@ -26,7 +26,7 @@
     right: 20px;
 }
   
-  /* Optional: Style for the rest of the page content */
+  /*Style for the rest of the page content */
   body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -87,14 +87,17 @@
     color: #333;
   }
   
-  .comment-input {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    margin-bottom: 0.8rem;
-    font-size: 1rem;
-  }
+/* Comment input box */
+.comment-input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+}
   
   .comment-button {
     background-color: #007bff;
@@ -121,14 +124,17 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .create-post-form input[type="text"] {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-  }
+  /* Caption input box */
+.create-post-form input[type="text"] {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
   
   .create-post-form input[type="file"] {
     padding: 0.5rem;
@@ -157,6 +163,35 @@
     height: auto;
     border-radius: 8px;
   }  
+
+  .create-post-card {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Style for the Create Post button */
+  .create-post-btn {
+    width: 100%;
+    max-width: 200px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background-color: #4CAF50;
+    color: white; /* White text */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition */
+  }
+
+  /* Hover effect */
+  .create-post-btn:hover {
+    background-color: #45a049;
+  }
+
   
   /* Mobile Responsiveness */
   @media (max-width: 768px) {
@@ -171,5 +206,12 @@
     .create-post-form {
       padding: 1rem;
     }
+
+  .create-post-card {
+      max-width: 90%;
   }
-  
+  .create-post-form input[type="text"],
+  .comment-input {
+      width: 100%;
+  }
+}
