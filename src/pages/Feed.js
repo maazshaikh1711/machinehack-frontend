@@ -135,6 +135,11 @@ const Feed = () => {
     // };
     // console.log("----------------", postData)
 
+    if ( newPost.caption==="" && !newPost.image){
+      alert("Caption/Image is mandatory")
+      return
+    }
+
     try {
 
       const imageKey = await handleFileUpload();
@@ -227,7 +232,7 @@ const Feed = () => {
           }
           }
         />
-        <button type="submit">Create Post</button>
+        <button className="create-post-btn" type="submit">Create Post</button>
       </form>
 
       <h1>FEED</h1>
@@ -236,6 +241,11 @@ const Feed = () => {
         {posts.map((post) => (
           <div key={post._id} className="post-card">
             <h1 className="post-user-info">By: {post.user.username}</h1>
+
+            {/* imageKey: 'uploads/{image_name}'. image_name is optional, and shows if image is present in post. 
+                If not, do not render <img> tag below.
+                If yes, imageUrl contains actual link to render image.
+            */}
             {post.imageKey.replace(`uploads/`, '') !=="" && (
               <img src={post.imageUrl} alt="Post" className="post-image" />
             )}
